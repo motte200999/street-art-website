@@ -3,18 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b1b1d">
 <title>Street Art Paris – erlaubt oder unerlaubt?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rubik+Spray+Paint&family=Permanent+Marker&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Spray+Paint&family=Permanent+Marker&family=Saira+Stencil+One&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="css/style.css?v=5">
+<link rel="stylesheet" href="css/style.css?v=9">
 </head>
 <body>
 <header class="top">
-  <div class="brand">
+  <button class="brand" id="brand" aria-label="Street Art Paris – Start">
     <span class="brand-main">STREET ART</span><span class="brand-sub">PARIS</span>
-  </div>
+  </button>
   <nav class="nav" aria-label="Hauptmenü">
     <button data-view="map" class="active" data-i18n="nav_map"></button>
     <button data-view="stats" data-i18n="nav_stats"></button>
@@ -28,8 +29,8 @@
 <main>
   <section id="view-map" class="view active">
     <div id="map"></div>
-    <div class="hint" id="hint" data-i18n="hint"></div>
     <div class="legend" id="legend"></div>
+    <div class="progress" id="progress"></div>
     <aside id="panel" class="panel" aria-live="polite"></aside>
   </section>
 
@@ -40,12 +41,17 @@
   <section id="view-about" class="view page">
     <div class="page-inner" id="about"></div>
   </section>
+
+  <div id="intro" class="intro"></div>
 </main>
 
+<div id="lightbox" class="lightbox"><img alt=""></div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="data/arrondissements.js"></script>
-<script src="data/pieces.js?v=5"></script>
-<script src="js/i18n.js?v=5"></script>
-<script src="js/app.js?v=5"></script>
+<script src="data/pieces.js?v=9"></script>
+<script src="js/i18n.js?v=9"></script>
+<script src="js/app.js?v=9"></script>
 </body>
 </html>

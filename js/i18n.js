@@ -33,6 +33,7 @@ window.I18N = {
     about_cat3: "Geduldet / unklar: illegal entstanden und später geschützt, oder Wände, an denen die Stadt wegsieht.",
     about_h_img: "Bilder und Quellen",
     about_img: "Bilder stammen, wo möglich, aus frei lizenzierten Quellen (z. B. Wikimedia Commons). Urheber und Quelle stehen unter jedem Bild. Die Rechte an den abgebildeten Kunstwerken liegen bei den Künstlerinnen und Künstlern.",
+    intro_kicker: "Seminarfach-Projekt · {n} Werke · 20 Arrondissements", intro_q: "Kunst oder Vandalismus?", intro_text: "Bewerte Street Art aus ganz Paris – und erfahre erst danach, ob sie erlaubt war.", intro_s1: "Punkt auf der Karte antippen", intro_s2: "Werk bewerten und begründen", intro_s3: "Auflösung: erlaubt oder nicht?", intro_go: "Los geht’s", progress: "bewertet", leg_density: "je gelber, desto mehr Werke", qr_title: "Mach mit!", qr_text: "Scanne den Code mit dem Handy und bewerte selbst.", zoom: "Bild vergrößern",
     map_credit: "Karte"
   },
   en: {
@@ -68,6 +69,7 @@ window.I18N = {
     about_cat3: "Tolerated / unclear: made illegally and later protected, or walls where the city looks the other way.",
     about_h_img: "Images and sources",
     about_img: "Wherever possible, images come from freely licensed sources (e.g. Wikimedia Commons). Author and source are shown under each image. The rights to the artworks shown belong to the artists.",
+    intro_kicker: "School seminar project · {n} pieces · 20 arrondissements", intro_q: "Art or vandalism?", intro_text: "Rate street art from all over Paris – and only then find out whether it was authorised.", intro_s1: "Tap a spot on the map", intro_s2: "Rate the piece and say why", intro_s3: "The reveal: authorised or not?", intro_go: "Let’s go", progress: "rated", leg_density: "the yellower, the more pieces", qr_title: "Join in!", qr_text: "Scan the code with your phone and rate for yourself.", zoom: "Enlarge image",
     map_credit: "Map"
   },
   fr: {
@@ -103,6 +105,7 @@ window.I18N = {
     about_cat3: "Tolérée / incertain : créée illégalement puis protégée, ou murs où la Ville ferme les yeux.",
     about_h_img: "Images et sources",
     about_img: "Dans la mesure du possible, les images proviennent de sources sous licence libre (p. ex. Wikimedia Commons). L'auteur et la source figurent sous chaque image. Les droits sur les œuvres représentées appartiennent aux artistes.",
+    intro_kicker: "Projet de séminaire · {n} œuvres · 20 arrondissements", intro_q: "Art ou vandalisme ?", intro_text: "Notez le street art de tout Paris – et découvrez seulement ensuite s’il était autorisé.", intro_s1: "Touchez un point sur la carte", intro_s2: "Notez l’œuvre et dites pourquoi", intro_s3: "Révélation : autorisée ou non ?", intro_go: "C’est parti", progress: "notées", leg_density: "plus c’est jaune, plus il y a d’œuvres", qr_title: "Participez !", qr_text: "Scannez le code avec votre téléphone et notez vous-même.", zoom: "Agrandir l’image",
     map_credit: "Carte"
   }
 };
