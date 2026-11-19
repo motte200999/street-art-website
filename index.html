@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik+Spray+Paint&family=Permanent+Marker&family=Saira+Stencil+One&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="css/style.css?v=9">
+<link rel="stylesheet" href="css/style.css?v=12">
 </head>
 <body>
 <header class="top">
@@ -31,6 +31,10 @@
     <div id="map"></div>
     <div class="legend" id="legend"></div>
     <div class="progress" id="progress"></div>
+    <button class="route-btn" id="route-btn"></button>
+    <div class="routes" id="routes"></div>
+    <div class="routebar" id="routebar"></div>
+    <div class="toast" id="toast" role="status"></div>
     <aside id="panel" class="panel" aria-live="polite"></aside>
   </section>
 
@@ -50,8 +54,9 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="data/arrondissements.js"></script>
-<script src="data/pieces.js?v=9"></script>
-<script src="js/i18n.js?v=9"></script>
-<script src="js/app.js?v=9"></script>
+<script src="data/pieces.js?v=12"></script>
+<script src="data/routes.js?v=12"></script>
+<script src="js/i18n.js?v=12"></script>
+<script src="js/app.js?v=12"></script>
 </body>
 </html>

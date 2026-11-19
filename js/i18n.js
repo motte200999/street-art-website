@@ -34,6 +34,7 @@ window.I18N = {
     about_h_img: "Bilder und Quellen",
     about_img: "Bilder stammen, wo möglich, aus frei lizenzierten Quellen (z. B. Wikimedia Commons). Urheber und Quelle stehen unter jedem Bild. Die Rechte an den abgebildeten Kunstwerken liegen bei den Künstlerinnen und Künstlern.",
     intro_kicker: "Seminarfach-Projekt · {n} Werke · 20 Arrondissements", intro_q: "Kunst oder Vandalismus?", intro_text: "Bewerte Street Art aus ganz Paris – und erfahre erst danach, ob sie erlaubt war.", intro_s1: "Punkt auf der Karte antippen", intro_s2: "Werk bewerten und begründen", intro_s3: "Auflösung: erlaubt oder nicht?", intro_go: "Los geht’s", progress: "bewertet", leg_density: "je gelber, desto mehr Werke", qr_title: "Mach mit!", qr_text: "Scanne den Code mit dem Handy und bewerte selbst.", zoom: "Bild vergrößern",
+    routes: "Routen", routes_title: "Routen", routes_lead: "Wähle einen Bezirk: Die Route führt zu Fuß an allen Werken vorbei. Bewerte alle, dann ist der Bezirk erkundet.", route: "Route", station: "Station", stations: "Stationen", approx: "ca.", route_single: "nur ein Werk, keine Route nötig", route_next: "Zur nächsten offenen Station", route_all_done: "Bezirk erkundet – nächste Route wählen", route_close: "Route schließen", explored: "erkundet", explored_toast: "{arr} erkundet!", districts: "Bezirke", leg_explored: "Bezirk erkundet", own_photo: "eigenes Foto",
     map_credit: "Karte"
   },
   en: {
@@ -70,6 +71,7 @@ window.I18N = {
     about_h_img: "Images and sources",
     about_img: "Wherever possible, images come from freely licensed sources (e.g. Wikimedia Commons). Author and source are shown under each image. The rights to the artworks shown belong to the artists.",
     intro_kicker: "School seminar project · {n} pieces · 20 arrondissements", intro_q: "Art or vandalism?", intro_text: "Rate street art from all over Paris – and only then find out whether it was authorised.", intro_s1: "Tap a spot on the map", intro_s2: "Rate the piece and say why", intro_s3: "The reveal: authorised or not?", intro_go: "Let’s go", progress: "rated", leg_density: "the yellower, the more pieces", qr_title: "Join in!", qr_text: "Scan the code with your phone and rate for yourself.", zoom: "Enlarge image",
+    routes: "Routes", routes_title: "Routes", routes_lead: "Pick a district: the route takes you on foot past every piece. Rate them all and the district is explored.", route: "Route", station: "stop", stations: "stops", approx: "approx.", route_single: "just one piece, no route needed", route_next: "Go to the next open stop", route_all_done: "District explored – choose the next route", route_close: "Close route", explored: "explored", explored_toast: "{arr} explored!", districts: "districts", leg_explored: "district explored", own_photo: "own photo",
     map_credit: "Map"
   },
   fr: {
@@ -106,6 +108,7 @@ window.I18N = {
     about_h_img: "Images et sources",
     about_img: "Dans la mesure du possible, les images proviennent de sources sous licence libre (p. ex. Wikimedia Commons). L'auteur et la source figurent sous chaque image. Les droits sur les œuvres représentées appartiennent aux artistes.",
     intro_kicker: "Projet de séminaire · {n} œuvres · 20 arrondissements", intro_q: "Art ou vandalisme ?", intro_text: "Notez le street art de tout Paris – et découvrez seulement ensuite s’il était autorisé.", intro_s1: "Touchez un point sur la carte", intro_s2: "Notez l’œuvre et dites pourquoi", intro_s3: "Révélation : autorisée ou non ?", intro_go: "C’est parti", progress: "notées", leg_density: "plus c’est jaune, plus il y a d’œuvres", qr_title: "Participez !", qr_text: "Scannez le code avec votre téléphone et notez vous-même.", zoom: "Agrandir l’image",
+    routes: "Parcours", routes_title: "Parcours", routes_lead: "Choisissez un arrondissement : le parcours passe à pied devant toutes les œuvres. Notez-les toutes et l’arrondissement est exploré.", route: "Parcours", station: "étape", stations: "étapes", approx: "env.", route_single: "une seule œuvre, pas besoin de parcours", route_next: "Aller à la prochaine étape", route_all_done: "Arrondissement exploré – choisir un autre parcours", route_close: "Fermer le parcours", explored: "exploré", explored_toast: "{arr} exploré !", districts: "arrondissements", leg_explored: "arrondissement exploré", own_photo: "photo personnelle",
     map_credit: "Carte"
   }
 };

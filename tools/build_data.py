@@ -27,6 +27,10 @@ def load_all():
             out[p["id"]] = p
     return out
 
+def own_ids(allp):
+    """Eigene Pieces (research/group-o.json) kommen immer vollständig auf die Karte."""
+    return sorted(i for i in allp if i.startswith("o-"))
+
 def norm(p, web):
     ex = (p.get("existiert_noch") or "unbekannt").strip().lower()
     y = re.search(r"(19|20)\d\d", ex)
@@ -41,6 +45,7 @@ def norm(p, web):
         "link": p.get("image_link") or (p.get("quellen") or [None])[0],
         "quellen": [u for u in dict.fromkeys(([p.get("status_quelle")] if p.get("status_quelle") else []) + (p.get("quellen") or [])) if u][:5],
         "sicherheit": p.get("sicherheit", ""),
+        "eigen_foto": bool(p.get("eigen_foto")),
     }
     if p.get("bild_datei") and os.path.exists(R(p["bild_datei"])) and p["id"] not in BAD_IMAGES:
         q.update(bild=p["bild_datei"], bild_urheber=p.get("bild_urheber"), bild_lizenz=p.get("bild_lizenz"), bild_quelle=p.get("bild_quelle"))
@@ -70,6 +75,8 @@ def selected():
     for g, nums in KEEP.items():
         for n in nums:
             out.append(norm(allp["%s-%02d" % (g, n)], web))
+    for i in own_ids(allp):
+        out.append(norm(allp[i], web))
     out.sort(key=lambda p: (p["arr"], p["id"]))
     return spread(out)
 

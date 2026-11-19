@@ -82,29 +82,71 @@
 
   // ---------- Karte ----------
   var map = L.map("map", { zoomControl: true, attributionControl: true, zoomSnap: 0.5 }).setView([48.8589, 2.347], 12);
+  window.SAP_MAP = map; // zum Testen in der Browser-Konsole
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19, className: "tiles-dark",
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
+  // ---------- Arrondissements: Dichte, Fortschritt, „erkundet“ ----------
+  var ROUTES = window.ROUTES || {};
+  var arrPieces = {}, arrMax = 1, arrLayers = {}, arrLabels = {}, activeArr = null;
+  PIECES.forEach(function (p) {
+    (arrPieces[p.arr] = arrPieces[p.arr] || []).push(p);
+    if (arrPieces[p.arr].length > arrMax) arrMax = arrPieces[p.arr].length;
+  });
+  function arrName(n) { return n + "<sup>" + (n === 1 ? "er" : "e") + "</sup>"; }
+  function arrStat(n) {
+    var list = arrPieces[n] || [];
+    return { n: list.length, done: list.filter(isRevealed).length };
+  }
+  function isExplored(n) { var s = arrStat(n); return s.n > 0 && s.done === s.n; }
+  function exploredCount() { var c = 0; for (var a = 1; a <= 20; a++) if (isExplored(a)) c++; return c; }
+  function arrStyle(n) {
+    var s = arrStat(n), on = activeArr === n;
+    if (s.n && s.done === s.n) {
+      return { color: on ? "#ffffff" : "#19e3ff", weight: on ? 3.5 : 2.4, opacity: 0.95, fillColor: "#19e3ff", fillOpacity: 0.26, dashArray: null };
+    }
+    return { color: on ? "#ffffff" : "#ffe600", weight: on ? 3.5 : 1.4, opacity: on ? 0.95 : 0.6, fillColor: "#ffe600",
+      fillOpacity: 0.02 + 0.2 * (s.n / arrMax), dashArray: on ? null : "5 5" };
+  }
+  function arrLabelHtml(n) {
+    var s = arrStat(n);
+    if (s.n && s.done === s.n) return '<div class="al done"><b>' + arrName(n) + "</b><span>" + t("explored") + "</span></div>";
+    return '<div class="al"><b>' + arrName(n) + "</b>" + (s.done ? "<small>" + s.done + "/" + s.n + "</small>" : "") + "</div>";
+  }
   if (ARR && ARR.features) {
-    // Je mehr Werke in einem Arrondissement, desto kräftiger die gelbe Fläche.
-    var arrCount = {}, arrMax = 1;
-    PIECES.forEach(function (p) { arrCount[p.arr] = (arrCount[p.arr] || 0) + 1; if (arrCount[p.arr] > arrMax) arrMax = arrCount[p.arr]; });
     L.geoJSON(ARR, {
-      interactive: false,
-      style: function (f) {
-        var n = arrCount[f.properties && f.properties.c_ar] || 0;
-        return { color: "#ffe600", weight: 1.4, opacity: 0.6, fillColor: "#ffe600", fillOpacity: 0.02 + 0.2 * (n / arrMax), dashArray: "5 5" };
-      },
+      style: function (f) { return arrStyle(f.properties.c_ar); },
       onEachFeature: function (f, layer) {
-        var n = f.properties && (f.properties.c_ar || f.properties.nr);
+        var n = f.properties && f.properties.c_ar;
         if (!n) return;
-        var c = layer.getBounds().getCenter();
-        if (f.properties.center) c = L.latLng(f.properties.center[0], f.properties.center[1]);
-        L.marker(c, { interactive: false, icon: L.divIcon({ className: "arr-label", html: n + "<sup>e</sup>", iconSize: [30, 18] }) }).addTo(map);
+        arrLayers[n] = layer;
+        var c = f.properties.center ? L.latLng(f.properties.center[0], f.properties.center[1]) : layer.getBounds().getCenter();
+        arrLabels[n] = L.marker(c, { interactive: false, keyboard: false, zIndexOffset: -1000,
+          icon: L.divIcon({ className: "arr-label", html: "", iconSize: [96, 44], iconAnchor: [48, 22] }) }).addTo(map);
+        // Antippen eines Bezirks öffnet seine Route (außer ein Werk ist gerade geöffnet – dann schließt der Tipp nur das Panel).
+        layer.on("click", function () { if (!current) selectRoute(n); });
       }
     }).addTo(map);
+  }
+  var explored0 = {};
+  for (var a0 = 1; a0 <= 20; a0++) explored0[a0] = isExplored(a0);
+  function updateDistricts(announce) {
+    for (var n = 1; n <= 20; n++) {
+      if (arrLayers[n]) arrLayers[n].setStyle(arrStyle(n));
+      if (arrLabels[n]) arrLabels[n].setIcon(L.divIcon({ className: "arr-label", html: arrLabelHtml(n), iconSize: [96, 44], iconAnchor: [48, 22] }));
+      var ex = isExplored(n);
+      if (announce && ex && !explored0[n]) showToast(t("explored_toast").replace("{arr}", arrName(n)));
+      explored0[n] = ex;
+    }
+  }
+
+  var toastTimer = null;
+  function showToast(html) {
+    var el = document.getElementById("toast");
+    el.innerHTML = html; el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.classList.remove("show"); }, 3200);
   }
 
   // Marker als Farbklecks: weiß mit „?“ vor der Bewertung, danach in der Farbe des Status.
@@ -148,16 +190,109 @@
 
   function updateProgress() {
     var done = PIECES.filter(isRevealed).length;
-    document.getElementById("progress").innerHTML = "<b>" + done + "<i>/" + PIECES.length + "</i></b><small>" + t("progress") + "</small>";
+    document.getElementById("progress").innerHTML = "<b>" + done + "<i>/" + PIECES.length + "</i></b><small>" + t("progress") + "</small>" +
+      '<small class="d">' + exploredCount() + "/20 " + t("districts") + "</small>";
   }
-  function refreshMarkers() {
+  function refreshMarkers(announce) {
     PIECES.forEach(function (p) {
       if (!markers[p.id]) return;
       markers[p.id].setIcon(iconFor(p));
-      markers[p.id].setZIndexOffset(current && current.id === p.id ? 1000 : 0);
+      markers[p.id].setOpacity(activeArr && p.arr !== activeArr ? 0.3 : 1);
+      markers[p.id].setZIndexOffset(current && current.id === p.id ? 1000 : (activeArr && p.arr === activeArr ? 500 : 0));
     });
-    updateProgress();
+    updateProgress(); updateDistricts(announce);
+    if (activeArr) renderRouteBar();
   }
+
+  // ---------- Routen ----------
+  var routeLayer = L.layerGroup().addTo(map), viewMap = document.getElementById("view-map");
+  function fmtKm(m) { return (m / 1000).toFixed(1).replace(".", lang === "en" ? "." : ","); }
+  function fmtMin(s) { return Math.max(1, Math.round(s / 60)); }
+  function routeOrder(n) {
+    var r = ROUTES[String(n)], list = arrPieces[n] || [];
+    if (!r) return list.slice();
+    var byId = {}; list.forEach(function (p) { byId[p.id] = p; });
+    var out = r.order.map(function (id) { return byId[id]; }).filter(Boolean);
+    list.forEach(function (p) { if (out.indexOf(p) < 0) out.push(p); }); // falls neue Pieces noch nicht berechnet sind
+    return out;
+  }
+  function selectRoute(n) {
+    if (!arrPieces[n]) return;
+    activeArr = n; viewMap.classList.add("routing");
+    document.getElementById("routes").classList.remove("open");
+    routeLayer.clearLayers();
+    var r = ROUTES[String(n)], order = routeOrder(n), pts = [];
+    if (r && r.coords.length > 1) {
+      L.polyline(r.coords, { color: "#000", weight: 10, opacity: 0.85, interactive: false }).addTo(routeLayer);
+      L.polyline(r.coords, { color: "#ff2e88", weight: 5, opacity: 1, dashArray: "2 10", lineCap: "round", interactive: false }).addTo(routeLayer);
+      pts = r.coords.slice();
+    }
+    order.forEach(function (p, i) {
+      pts.push([p.lat, p.lng]);
+      L.marker([p.lat, p.lng], { interactive: false, keyboard: false, zIndexOffset: 2000,
+        icon: L.divIcon({ className: "route-num" + (i === 0 ? " start" : ""), html: String(i + 1), iconSize: [22, 22], iconAnchor: [-6, 30] }) }).addTo(routeLayer);
+    });
+    var small = window.innerWidth <= 720;
+    var bar = document.getElementById("routebar"); renderRouteBar();
+    var barH = (bar.offsetHeight || 190) + (small ? 24 : 40);
+    map.fitBounds(L.latLngBounds(pts), { paddingTopLeft: [40, small ? 50 : 70], paddingBottomRight: [40, barH], maxZoom: 17 });
+    refreshMarkers();
+  }
+  function closeRoute() {
+    activeArr = null; viewMap.classList.remove("routing"); routeLayer.clearLayers();
+    refreshMarkers();
+  }
+  function renderRouteBar() {
+    var n = activeArr, r = ROUTES[String(n)], order = routeOrder(n), s = arrStat(n);
+    var info = order.length + " " + (order.length === 1 ? t("station") : t("stations"));
+    if (r) info += " · " + fmtKm(r.distance) + " km · " + t("approx") + " " + fmtMin(r.duration) + " min";
+    else info += " · " + t("route_single");
+    var h = '<div class="rb-head"><div class="rb-title">' + t("route") + " " + arrName(n) +
+      (s.n && s.done === s.n ? ' <span class="rb-done">' + t("explored") + "</span>" : "") + '</div><button class="rb-x" data-act="close" aria-label="' + esc(t("route_close")) + '">×</button></div>' +
+      '<div class="rb-info">' + info + " · " + s.done + "/" + s.n + " " + t("progress") + "</div>" +
+      '<div class="rb-stops">' + order.map(function (p, i) {
+        return '<button class="stop' + (isRevealed(p) ? " " + p.status : "") + (current && current.id === p.id ? " sel" : "") + '" data-id="' + p.id + '" title="' + esc(L10n(p.titel)) + '">' + (i + 1) + "</button>";
+      }).join("") + "</div>" +
+      '<button class="btn wide" data-act="next">' + (s.done === s.n ? t("route_all_done") : t("route_next")) + " →</button>";
+    document.getElementById("routebar").innerHTML = h;
+  }
+  document.getElementById("routebar").addEventListener("click", function (e) {
+    var el = e.target.closest("button"); if (!el) return;
+    if (el.dataset.act === "close") return closeRoute();
+    var order = routeOrder(activeArr), p = null;
+    if (el.dataset.id) p = order.filter(function (x) { return x.id === el.dataset.id; })[0];
+    if (el.dataset.act === "next") {
+      p = order.filter(function (x) { return !isRevealed(x); })[0];
+      if (!p) { document.getElementById("routes").classList.add("open"); return; }
+    }
+    if (p) { map.panTo([p.lat, p.lng]); openPiece(p); }
+  });
+
+  function renderRoutesList() {
+    var h = '<div class="rl-head"><h3>' + t("routes_title") + '</h3><button class="rb-x" data-act="close" aria-label="×">×</button></div>' +
+      '<p class="rl-lead">' + t("routes_lead") + '</p><div class="rl-list">';
+    for (var n = 1; n <= 20; n++) {
+      var s = arrStat(n), r = ROUTES[String(n)];
+      if (!s.n) continue;
+      var pct = Math.round((s.done / s.n) * 100);
+      h += '<button class="rl-item' + (s.done === s.n ? " done" : "") + (activeArr === n ? " on" : "") + '" data-arr="' + n + '">' +
+        '<b class="rl-n">' + arrName(n) + "</b>" +
+        '<span class="rl-meta">' + s.n + " " + (s.n === 1 ? t("station") : t("stations")) + (r ? " · " + fmtKm(r.distance) + " km · " + fmtMin(r.duration) + " min" : "") +
+        '<i class="rl-bar"><i style="width:' + pct + '%"></i></i></span>' +
+        '<span class="rl-state">' + (s.done === s.n ? t("explored") : s.done + "/" + s.n) + "</span></button>";
+    }
+    document.getElementById("routes").innerHTML = h + "</div>";
+  }
+  document.getElementById("routes").addEventListener("click", function (e) {
+    var el = e.target.closest("button"); if (!el) return;
+    if (el.dataset.act === "close") return document.getElementById("routes").classList.remove("open");
+    if (el.dataset.arr) { if (current) closePanel(); selectRoute(+el.dataset.arr); }
+  });
+  document.getElementById("route-btn").addEventListener("click", function () {
+    var el = document.getElementById("routes");
+    if (!el.classList.contains("open")) { renderRoutesList(); if (current) closePanel(); }
+    el.classList.toggle("open");
+  });
 
   // ---------- Panel ----------
   var panel = document.getElementById("panel");
@@ -206,8 +341,9 @@
     var p = current; if (!p) return;
     var h = '<button class="panel-close" aria-label="×">×</button>';
     if (p.bild) {
-      h += '<div class="photo" title="' + esc(t("zoom")) + '"><img src="' + esc(p.bild) + '" alt="' + esc(L10n(p.titel)) + '"></div>';
-      h += '<div class="credit">' + t("photo") + ": " + esc(p.bild_urheber || t("unknown")) + (p.bild_lizenz ? " · " + esc(p.bild_lizenz) : "") +
+      h += '<div class="photo" title="' + esc(t("zoom")) + '"><img src="' + esc(p.bild) + '" alt="' + esc(L10n(p.titel)) + '">' +
+        (p.eigen_foto ? '<span class="own-tag">' + t("own_photo") + "</span>" : "") + "</div>";
+      h += '<div class="credit">' + t("photo") + ": " + esc(p.eigen_foto ? t("own_photo") : (p.bild_urheber || t("unknown"))) + (p.bild_lizenz ? " · " + esc(p.bild_lizenz) : "") +
         (p.bild_quelle ? ' · <a href="' + esc(safeUrl(p.bild_quelle)) + '" target="_blank" rel="noopener">' + t("sources") + "</a>" : "") + "</div>";
     } else {
       h += '<div class="noimg"><div><p>' + t("no_image") + "</p>" +
@@ -276,7 +412,7 @@
     if (el.id === "submit" && draft.vote) {
       ratings.push({ id: current.id, vote: draft.vote, aspects: draft.aspects.slice(), comment: draft.comment.trim().slice(0, 200), ts: Date.now() });
       save(KEY_R, ratings); forceForm = false; draft = { vote: null, aspects: [], comment: "" };
-      renderPanel(); refreshMarkers();
+      renderPanel(); refreshMarkers(true);
       var rv = panel.querySelector(".reveal"); if (rv) rv.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
@@ -362,8 +498,13 @@
     document.getElementById("legend").innerHTML =
       '<span><i class="lsplat">' + splatSvg("?", 0) + "</i>" + t("leg_unrated") + "</span>" +
       STATUSES.map(function (s) { return '<span><i class="lsplat ' + s + '">' + splatSvg(GLYPH[s], 0) + "</i>" + t("leg_" + s) + "</span>"; }).join("") +
-      '<span><i class="ldens"></i>' + t("leg_density") + "</span>";
-    renderStats(); renderAbout(); renderIntro(); updateProgress(); if (current) renderPanel();
+      '<span><i class="ldens"></i>' + t("leg_density") + "</span>" +
+      '<span><i class="ldens done"></i>' + t("leg_explored") + "</span>";
+    renderStats(); renderAbout(); renderIntro(); updateProgress(); updateDistricts(false);
+    document.getElementById("route-btn").textContent = t("routes");
+    if (document.getElementById("routes").classList.contains("open")) renderRoutesList();
+    if (activeArr) renderRouteBar();
+    if (current) renderPanel();
   }
 
   // ---------- Startbildschirm ----------
